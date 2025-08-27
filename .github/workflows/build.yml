@@ -12,24 +12,28 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Unzip project
-      run: |
-        rm -rf project
-        unzip -q navon_biznes_android_project.zip -d project || exit 1
-        chmod +x project/gradlew || true
-
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: temurin
-        java-version: "17"
+        java-version: '17'
+
+    # מתקינים Gradle כי אין gradlew בפרויקט
+    - name: Set up Gradle
+      uses: gradle/actions/setup-gradle@v4
+      with:
+        # אם תהיה בעיית תאימות, נחליף גרסה כאן
+        gradle-version: '8.2'
 
     - name: Build Debug APK
-      working-directory: project
-      run: ./gradlew assembleDebug
+      working-directory: .
+      run: |
+        gradle --version
+        gradle assembleDebug
 
     - name: Upload APK artifact
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: app-debug.apk
-        path: project/app/build/outputs/apk/debug/*.apk
+        path: app/build/outputs/apk/debug/*.apk
