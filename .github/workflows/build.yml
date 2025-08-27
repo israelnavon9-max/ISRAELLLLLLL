@@ -2,7 +2,7 @@ name: Android APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -24,8 +24,8 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Build Debug APK (no wrapper)
         uses: gradle/gradle-build-action@v3
@@ -33,9 +33,10 @@ jobs:
           gradle-version: '8.2'
           build-root-directory: project
           arguments: assembleDebug
+          cache-read-only: true
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
-          path: project/**/build/outputs/apk/debug/*.apk
+          path: project/app/build/outputs/apk/debug/*.apk
